@@ -28,6 +28,32 @@ register_external_toolchains(
 
 Local or imported rules can be specified in the string field (`bazel_toolchain_helm`), making it simple to map the toolchain definition to the toolchain use in Bazel.
 
+```ini
+Name=yq
+Version=4.13.2
+
+[linux_amd64]
+OS=linux
+CPU=x86_64
+Executable=yq_linux_amd64
+URL=https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64.tar.gz
+Sha256Sum=b462478cfee8fb02b1b6bbee87b2b1d2f0ef4f0b693a95c04308006f04cc525e
+
+[darwin_amd64]
+OS=osx
+CPU=x86_64
+Executable=yq_darwin_amd64
+URL=https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_darwin_amd64.tar.gz
+Sha256Sum=cf0cbf49a423d515d69879c08af4bab64af09f29b949545aa8e3d771a94a3db7
+
+[windows_amd64]
+OS=windows
+CPU=x86_64
+Executable=yq_windows_amd64.exe
+URL=https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_windows_amd64.zip
+Sha256Sum=0b08de85f4de4b55e98fcd69c707bea52f91478603cc4221c024ddd80cfd6141
+```
+
 ## Custom Tool Stores
 
 These can then be combined with custom storages for tools, rather than just relying on the `http_archive`. An example would be an `s3_archive` rule that can retrieve these tools from an AWS S3 Bucket responsible for storing these binaries.
@@ -40,3 +66,10 @@ The aim of this would be to enable the above rules (`register_external_toolchain
 4. In bazel, modify the `register_external_toolchains` to add an adaptor/affix/aspect/etc that supports downloading from S3.
 
 The above is the scenario this idea was explored, but the hope would be letting the `.toolchain` (& potentially supporting files) act as the source of truth about toolchains, and letting Bazel interpret it.
+
+
+## Design Jots
+
+- Instead of URLs for downloading the toolchains, what if instead they were content-addressable?
+- Rather than using bazel to perform the analysis, would it be possible to have a tool generate the entire compatibility-layer? Thus allowing us to only define the necessary "version" components in a bazel compatible way?
+- Would a system like `gazelle` make more sense? Having a tool read the `.toolchain` file, then generate all the `repository_rule` bindings (& use `netrc` instead of custom rules?)
