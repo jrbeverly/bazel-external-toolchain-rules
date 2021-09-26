@@ -1,5 +1,5 @@
 def _copy_cmd(cmd, directory, files):
-    return "\n".join(["{} {} {}/.".format(cmd, f.path, directory) for f in files])
+    return "\n".join(["{} '{}' '{}/'".format(cmd, f.path, directory) for f in files])
 
 def _helm_repository_impl(ctx):
     helm = ctx.toolchains["@bazel_toolchain_helm//:toolchain_type"].toolinfo
