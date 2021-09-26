@@ -1,0 +1,10 @@
+exports_files(["helm_repository.bat.tpl", "helm_repository.sh.tpl"])
+
+alias(
+    name = "helm_repository_tpl",
+    actual = select({
+        "@bazel_tools//src/conditions:host_windows": "//bazel/macros:helm_repository.bat.tpl",
+        "//conditions:default": "//bazel/macros:helm_repository.sh.tpl",
+    }),
+    visibility = ["//visibility:public"]
+)
