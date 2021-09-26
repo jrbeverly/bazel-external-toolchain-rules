@@ -81,7 +81,7 @@ ExternallyManagedToolInfo = provider(
         "name": "",
         "version": "",
         "toolchains": "Docs",
-    }
+    },
 )
 
 ExternallyManagedToolChainInfo = provider(

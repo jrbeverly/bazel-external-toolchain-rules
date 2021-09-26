@@ -3,8 +3,8 @@ load("//bazel/macros:http_toolchain.bzl", "register_external_toolchain")
 
 def _bazel_load(tool):
     return """load("@{rule}//:deps.bzl", install_{name}_toolchain = "install_toolchain")""".format(
-        name = tool['name'],
-        rule = tool['rule'],
+        name = tool["name"],
+        rule = tool["rule"],
     )
 
 def _load_all_toolchains_impl(repository_ctx):
@@ -14,9 +14,9 @@ def _load_all_toolchains_impl(repository_ctx):
         tool = parse_toolchain_file(repository_ctx, toolchain_path)
 
         tools.append({
-            'name': tool.name,
-            'rule': rule_name,
-            'tool': tool,
+            "name": tool.name,
+            "rule": rule_name,
+            "tool": tool,
         })
 
     repository_ctx.file("BUILD.bazel", "")
@@ -28,7 +28,7 @@ def install_toolchains():
     {install_rules}
     """.format(
             load_rules = "\n".join([_bazel_load(tool) for tool in tools]),
-            install_rules = "\n    ".join(["install_{}_toolchain()".format(tool['name']) for tool in tools]),
+            install_rules = "\n    ".join(["install_{}_toolchain()".format(tool["name"]) for tool in tools]),
         ),
     )
 
