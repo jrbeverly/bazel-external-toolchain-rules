@@ -32,7 +32,7 @@ load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
 container_deps()
 
-load("//bazel/macros:toolchains.bzl", "register_external_toolchains")
+load("//bazel/macros:load_all.bzl", "register_external_toolchains")
 
 register_external_toolchains(
     name = "external_toolchains",
