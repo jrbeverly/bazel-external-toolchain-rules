@@ -1,4 +1,0 @@
-exports_files([
-    "helm_repository.bat.tpl",
-    "helm_repository.sh.tpl",
-])

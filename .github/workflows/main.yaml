@@ -10,19 +10,11 @@ jobs:
         include:
           - os: ubuntu-latest
           - os: macos-latest
-          - os: windows-latest
     timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
       - name: Build
-        if: matrix.os == 'windows-latest'
-        shell: bash
-        run: bazel build -s //:index
-        env:
-          BAZEL_SH: C:\msys64\usr\bin\bash.exe
-      - name: Build
-        if: matrix.os != 'windows-latest'
         shell: bash
         run: bazel build -s //:index
       - name: Cat Result
