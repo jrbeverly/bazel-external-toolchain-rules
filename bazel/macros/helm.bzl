@@ -6,12 +6,12 @@ def _helm_repository_impl(ctx):
     yq = ctx.toolchains["@bazel_toolchain_yq//:toolchain_type"].toolinfo
 
     index = ctx.actions.declare_file("{}.yaml".format(ctx.attr.name))
-    build_file = ctx.actions.declare_file("{}.sh".format(ctx.attr.name))
+    build_file = ctx.actions.declare_file("{}.{}".format(ctx.attr.name, ctx.attr.extension))
     chart_directory = ctx.actions.declare_directory("{}.charts".format(ctx.attr.name))
 
     ctx.actions.expand_template(
         output = build_file,
-        template = ctx.file._cmd_tpl,
+        template = ctx.file.cmd_tpl,
         substitutions = {
             "{copy_cmd}": _copy_cmd(chart_directory.path, ctx.files.charts),
             "{directory}": chart_directory.path,
@@ -29,7 +29,7 @@ def _helm_repository_impl(ctx):
     )
     return [DefaultInfo(files = depset([index]))]
 
-helm_repository = rule(
+_helm_repository = rule(
     implementation = _helm_repository_impl,
     attrs = {
         "charts": attr.label_list(
@@ -37,9 +37,12 @@ helm_repository = rule(
             doc = "Charts",
             allow_files = True,
         ),
-        "_cmd_tpl": attr.label(
+        "extension": attr.string(
+            mandatory = True,
+        ),
+        "cmd_tpl": attr.label(
+            mandatory = True,
             allow_single_file = True,
-            default = "//bazel/macros:helm_repository_tpl",
         ),
     },
     toolchains = [
@@ -47,3 +50,18 @@ helm_repository = rule(
         "@bazel_toolchain_yq//:toolchain_type",
     ],
 )
+
+def helm_repository(name, charts, **kwargs):
+    _helm_repository(
+        name = name,
+        charts = charts,
+        extension = select({
+            "@bazel_tools//src/conditions:host_windows": ".bat",
+            "//conditions:default": ".sh",
+        }),
+        cmd_tpl = select({
+            "@bazel_tools//src/conditions:host_windows": "//bazel/macros:helm_repository.bat.tpl",
+            "//conditions:default": "//bazel/macros:helm_repository.sh.tpl",
+        }),
+        **kwargs
+    )
